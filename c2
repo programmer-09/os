@@ -1,0 +1,869 @@
+1)arithmetic:
+
+#!/bin/bash
+echo "addition of two number"
+var=$((2+7))
+echo $var
+
+echo "substraction of two number"
+var1=$((7-2))
+echo $var1
+
+echo "multiplication of two numbers"
+var2=$((7*2))
+echo $var2
+
+echo "divisionof 2 numbers:"
+var3=$((4/4))
+echo $var3
+
+
+
+2)substring:
+#!/bin/bash
+
+# Read inputs
+read -p "Enter the main string: " main_string
+read -p "Enter the substring to search for: " search_substring
+
+# Find the position of the substring
+position=$(expr match "$main_string" ".*$search_substring")
+
+# Check if the substring exists and output result
+if [[ $position -gt 0 ]]; then
+    start_position=$((position - ${#search_substring} + 1))
+    echo "The substring '$search_substring' is found at position: $start_position"
+else
+    echo "The substring '$search_substring' is not found in the main string."
+fi
+
+
+3)sorting :bubblesort
+#!/bin/bash
+
+read -p "Enter integers separated by spaces: " -a arr
+
+n=${#arr[@]}
+echo $n
+for ((i = 0; i<n; i++))
+do
+    
+    for ((j = 0; j<n-1; j++))
+    do
+    
+        if [ ${arr[j]} -gt ${arr[$((j+1))]} ]
+        then
+            temp=${arr[j]}
+            arr[$j]=${arr[$((j+1))]}  
+            arr[$((j+1))]=$temp
+        fi
+    done
+done
+
+echo "Array in sorted order :"
+echo ${arr[@]}
+
+
+4)upper to lower:
+
+#!/bin/bash
+
+read -p "enter the string in uppercase to convert to lowercase" utl
+t=${utl,,}
+echo "$t"
+
+
+read -p "enter the string in lower to convert to uppercase" ltu
+t1=${ltu^^}
+echo "$t1"
+
+5)palindrome:
+#!/bin/bash
+
+read -p "enter a string " input_string
+
+reversed_string=$(echo "$input_string" |rev)
+
+if [[ "$input_string" == "reversed_string" ]]; then
+    echo "the entered string '$input_string' is a pallindrome ."
+else
+    echo "the entered string '$input_string' is not a pallindrome."
+Fi
+
+
+awk:
+
+1)student :
+student.awk
+
+BEGIN{
+    FS=" : ";
+    OFS ="\t";
+    print "student report"
+    print "________________________________"
+    print "Name \t Average \t Grade"
+}
+
+NR >1 {
+     avg=($3 +$4 +$5) /3
+     if (avg <=50)
+          grade ="\t F"
+     else if (avg > 50)
+          grade ="\t  Pass"
+     print $2 ,avg ,grade
+}
+
+END{
+    print "end of report"
+    print " ____________________________________"
+}    
+
+input.txt:
+
+id: name : m1 : m2 : m3
+1 :  a   : 50 : 70 : 60
+2 :  b   : 60 : 90 : 86
+3 :  c   : 63 : 50 : 77
+
+
+2) employee
+
+employee.awk
+BEGIN {
+    print "Report"
+}
+
+{
+    sal = $3
+    da = 0.50 * sal
+    hra = 0.30 * sal
+    gs = sal - da - hra
+    grade = "F"
+
+    print $2, da, hra, gs
+}
+
+END {
+    print "END"
+}
+
+input.txt
+
+1   a   10000   20  35
+2   B   32222   12  45
+3   c   32224   45  30
+
+
+
+
+fcfs, sjfn:
+import matplotlib.pyplot as plt
+
+def draw_gantt_chart(gantt_chart):
+    plt.figure(figsize=(10, 5))
+    plt.barh(range(len(gantt_chart)), [item[1] for item in gantt_chart], left=[item[0] for item in gantt_chart], color='skyblue')
+    plt.yticks(range(len(gantt_chart)), [f'P{item[2]}' for item in gantt_chart])
+    plt.xlabel('Time')
+    plt.title('Gantt Chart')
+    plt.grid(axis='x')
+    plt.show()
+
+def calculate_times(processes, finish_times):
+    turnaround_times = []
+    waiting_times = []
+    
+    for i in range(len(processes)):
+        turnaround_time = finish_times[i] - processes[i][1]
+        waiting_time = turnaround_time - processes[i][2]
+        turnaround_times.append(turnaround_time)
+        waiting_times.append(waiting_time)
+
+    return turnaround_times, waiting_times
+def fcfs_scheduling(processes):
+    finish_times = []
+    current_time = 0
+
+    for process in processes:
+        if current_time < process[1]:
+            current_time = process[1]
+        finish_time = current_time + process[2]
+        finish_times.append(finish_time)
+        current_time = finish_time
+
+    turnaround_times, waiting_times = calculate_times(processes, finish_times)
+    total_waiting_time = sum(waiting_times)
+    total_turnaround_time = sum(turnaround_times)
+
+    print("First Come First Serve Scheduling:")
+    print(f"{'Process':<10}{'Arrival':<10}{'Burst':<10}{'Finish':<10}{'Turnaround':<10}{'Waiting':<10}")
+    for i, process in enumerate(processes):
+        print(f"P{i:<9}{process[1]:<10}{process[2]:<10}{finish_times[i]:<10}{turnaround_times[i]:<10}{waiting_times[i]:<10}")
+
+    print(f"Total Waiting Time: {total_waiting_time}")
+    print(f"Average Waiting Time: {total_waiting_time / len(processes)}")
+    print(f"Total Turnaround Time: {total_turnaround_time}")
+    print(f"Average Turnaround Time: {total_turnaround_time / len(processes)}")
+
+    draw_gantt_chart([(finish_times[i] - process[2], process[2], i) for i, process in enumerate(processes)])
+
+
+def sjf_non_preemptive(processes):
+    finish_times = []
+    current_time = 0
+
+    indexed_processes = [(i, process[0], process[1], process[2]) for i, process in enumerate(processes)]
+    
+    while indexed_processes:
+        available_processes = [p for p in indexed_processes if p[2] <= current_time]
+
+        if available_processes:
+            shortest_process = min(available_processes, key=lambda x: x[3])
+            indexed_processes.remove(shortest_process)
+
+            if current_time < shortest_process[2]:
+                current_time = shortest_process[2]
+
+            finish_time = current_time + shortest_process[3]
+            finish_times.append((shortest_process[0], finish_time))
+            current_time = finish_time
+        else:
+            current_time += 1
+
+    turnaround_times = [0] * len(processes)
+    waiting_times = [0] * len(processes)
+
+    for i, finish_time in finish_times:
+        turnaround_times[i] = finish_time - processes[i][1]
+        waiting_times[i] = turnaround_times[i] - processes[i][2]
+    total_waiting_time = sum(waiting_times)
+    total_turnaround_time = sum(turnaround_times)
+    print("Shortest Job First (Non-preemptive):")
+    print(f"{'Process':<10}{'Arrival':<10}{'Burst':<10}{'Finish':<10}{'Turnaround':<10}{'Waiting':<10}")
+    for i, process in enumerate(processes):
+        finish_time = next((ft for idx, ft in finish_times if idx == i), None)
+        print(f"P{i:<9}{process[1]:<10}{process[2]:<10}{finish_time:<10}{turnaround_times[i]:<10}{waiting_times[i]:<10}")
+    
+    print(f"Total Waiting Time: {total_waiting_time}")
+    print(f"Average Waiting Time: {total_waiting_time / len(processes)}")
+    print(f"Total Turnaround Time: {total_turnaround_time}")
+    print(f"Average Turnaround Time: {total_turnaround_time / len(processes)}")
+    draw_gantt_chart([(finish_time - processes[i][2], processes[i][2], i) for i, finish_time in finish_times])
+
+processes = [
+    ['P0', 0, 10],
+    ['P1', 2, 5],
+    ['P2', 3, 8],
+    ['P3', 5, 6],
+    ['P4', 5, 7]
+]
+
+fcfs_scheduling(processes)
+sjf_non_preemptive(processes)
+
+
+
+
+sjfp:
+import matplotlib.pyplot as plt
+
+def calculate_times(processes, finish_times):
+    turnaround_times = []
+    waiting_times = []
+
+    for i in range(len(processes)):
+        arrival_time = processes[i][1]
+        burst_time = processes[i][0]
+        turnaround_time = finish_times[i] - arrival_time
+        waiting_time = turnaround_time - burst_time
+        turnaround_times.append(turnaround_time)
+        waiting_times.append(waiting_time)
+
+    return turnaround_times, waiting_times
+
+def sjf_preemptive(processes):
+    n = len(processes)
+    finish_times = [0] * n
+    remaining_burst = [p[0] for p in processes]
+    current_time = 0
+    complete = 0
+    gantt_chart = []
+
+    while complete < n:
+        idx = -1
+        min_burst = float('inf')
+
+        for i in range(n):
+            if processes[i][1] <= current_time and remaining_burst[i] < min_burst and remaining_burst[i] > 0:
+                min_burst = remaining_burst[i]
+                idx = i
+
+        if idx != -1:
+            if gantt_chart and gantt_chart[-1][2] == idx:
+                gantt_chart[-1] = (gantt_chart[-1][0], gantt_chart[-1][1] + 1, idx)
+            else:
+                gantt_chart.append((current_time, 1, idx))
+            
+            remaining_burst[idx] -= 1
+            current_time += 1
+
+            if remaining_burst[idx] == 0:
+                finish_times[idx] = current_time
+                complete += 1
+        else:
+            if gantt_chart and gantt_chart[-1][2] == -1:
+                gantt_chart[-1] = (gantt_chart[-1][0], gantt_chart[-1][1] + 1, -1)
+            else:
+                gantt_chart.append((current_time, 1, -1))
+            current_time += 1
+
+    turnaround_times, waiting_times = calculate_times(processes, finish_times)
+    total_waiting_time = sum(waiting_times)
+    total_turnaround_time = sum(turnaround_times)
+
+    print("Shortest Job First (SJF) - Preemptive:")
+    print("Process   Arrival   Burst     Finish    Turnaround Waiting")
+    for i in range(n):
+        print(f"P{i}        {processes[i][1]}         {processes[i][0]}        {finish_times[i]}        {turnaround_times[i]}          {waiting_times[i]}")
+
+    print(f"Total Waiting Time: {total_waiting_time}")
+    print(f"Average Waiting Time: {total_waiting_time / len(processes)}")
+    print(f"Total Turnaround Time: {total_turnaround_time}")
+    print(f"Average Turnaround Time: {total_turnaround_time / len(processes)}")
+
+    plot_schedule("SJF Preemptive Scheduling", gantt_chart)
+
+    
+def plot_schedule(title, gantt_chart):
+    plt.figure(figsize=(10, 5))
+    
+    plt.barh(range(len(gantt_chart)), [item[1] for item in gantt_chart], left=[item[0] for item in gantt_chart], color='skyblue')
+    plt.yticks(range(len(gantt_chart)), [f'P{item[2]}' if item[2] != -1 else 'Idle' for item in gantt_chart])
+    plt.xlabel('Time')
+    plt.title(title)
+    plt.grid(axis='x', linestyle='--')
+    plt.show()
+
+processes_sjf = [(10, 0, 1), (5, 2, 3), (8, 3, 2), (6, 5, 4)]
+sjf_preemptive(processes_sjf)
+
+
+
+
+
+rr:
+import matplotlib.pyplot as plt
+
+def calculate_times(processes, finish_times):
+    turnaround_times = []
+    waiting_times = []
+
+    for i in range(len(processes)):
+        arrival_time = processes[i][1]
+        burst_time = processes[i][0]
+        turnaround_time = finish_times[i] - arrival_time
+        waiting_time = turnaround_time - burst_time
+        turnaround_times.append(turnaround_time)
+        waiting_times.append(waiting_time)
+
+    return turnaround_times, waiting_times
+
+def round_robin(processes, quantum):
+    n = len(processes)
+    remaining_burst = [p[0] for p in processes]
+    finish_times = [0] * n
+    time = 0
+    gantt_chart = []
+
+    while True:
+        done = True
+        for i in range(n):
+            if remaining_burst[i] > 0:
+                done = False
+                if remaining_burst[i] > quantum:
+                    gantt_chart.append((time, quantum, i))
+                    time += quantum
+                    remaining_burst[i] -= quantum
+                else:
+                    gantt_chart.append((time, remaining_burst[i], i))
+                    time += remaining_burst[i]
+                    finish_times[i] = time
+                    remaining_burst[i] = 0
+
+        if done:
+            break
+
+    turnaround_times, waiting_times = calculate_times(processes, finish_times)
+    
+    for i in range(n):
+        print(f"P{i}        {processes[i][1]}         {processes[i][0]}        {finish_times[i]}        {turnaround_times[i]}          {waiting_times[i]}")
+    
+    plot_schedule("Round Robin Scheduling", gantt_chart)
+
+
+
+def plot_schedule(title, gantt_chart):
+    plt.figure(figsize=(10, 5))
+    
+    plt.barh(range(len(gantt_chart)), [item[1] for item in gantt_chart], left=[item[0] for item in gantt_chart], color='skyblue')
+    plt.yticks(range(len(gantt_chart)), [f'P{item[2]}' if item[2] != -1 else 'Idle' for item in gantt_chart])
+    plt.xlabel('Time')
+    plt.title(title)
+    plt.grid(axis='x', linestyle='--')
+    plt.show()
+
+processes_rr = [(10, 0, 1), (5, 2, 3), (8, 3, 2), (6, 5, 4)]
+quantum = 4
+
+round_robin(processes_rr, quantum)
+
+
+
+
+pages:
+def fifo(pages, capacity):
+    memory = []
+    page_faults = 0
+    index = 0
+
+    for page in pages:
+        if page not in memory:
+            if len(memory) < capacity:
+                memory.append(page)
+            else:
+                memory[index] = page
+                index = (index + 1) % capacity
+            page_faults += 1
+        print(memory)
+
+    return page_faults
+
+def lru(pages, capacity):
+    memory = []
+    page_faults = 0
+
+    for page in pages:
+        if page not in memory:
+            if len(memory) < capacity:
+                memory.append(page)
+            else:
+                lru_index = 0
+                for i in range(len(memory)):
+                    if memory[i] not in pages[pages.index(page) - len(memory): pages.index(page)]:
+                        lru_index = i
+                        break
+                memory[lru_index] = page
+            page_faults += 1
+        else:
+            memory.remove(page)
+            memory.append(page)
+        print(memory)
+
+    return page_faults
+
+def opt(pages, capacity):
+    memory = []
+    page_faults = 0
+
+    for i in range(len(pages)):
+        if pages[i] not in memory:
+            if len(memory) < capacity:
+                memory.append(pages[i])
+                
+            else:
+                future = pages[i+1:]
+                index_to_replace = -1
+                farthest = -1
+                for index in range(len(memory)):
+                    if memory[index] not in future:
+                        index_to_replace = index
+                        break
+                    else:
+                        future_index = future.index(memory[index])
+                        if future_index > farthest:
+                            farthest = future_index
+                            index_to_replace = index
+                memory[index_to_replace] = pages[i]
+            page_faults += 1
+        print(memory)
+
+    return page_faults
+
+pages = list(map(int, input("Enter the pages separated by space: ").split()))
+capacity = int(input("Enter the capacity: "))
+
+total=len(pages)
+c=fifo(pages, capacity)
+print("FIFO Page Faults:", c)
+print("FIFO Page hits",total-c)
+print("FIFO Page Fault ratio",c/total)
+print("FIFO Page hit ratio",total-c/total)
+c=lru(pages, capacity)
+print("LRU Page Faults:", lru(pages, capacity))
+print("LRU Page hits",total-c)
+print("LRU Page Fault ratio",c/total)
+print("LRU Page hit ratio",total-c/total)
+c=opt(pages, capacity)
+print("OPT Page Faults:", c)
+print("OPT Page hits",total-c)
+print("OPT Page Fault ratio",c/total)
+print("OPT Page hit ratio",total-c/total)
+
+
+
+
+priority:
+
+import matplotlib.pyplot as plt
+
+def draw_gantt_chart(gantt_chart):
+    plt.figure(figsize=(10, 5))
+    plt.barh(range(len(gantt_chart)), [item[1] for item in gantt_chart], left=[item[0] for item in gantt_chart], color='skyblue')
+    plt.yticks(range(len(gantt_chart)), [f'P{item[2]}' for item in gantt_chart])
+    plt.xlabel('Time')
+    plt.title('Gantt Chart')
+    plt.grid(axis='x')
+    plt.show()
+
+def calculate_times(processes, finish_times):
+    turnaround_times = []
+    waiting_times = []
+    
+    for i in range(len(processes)):
+        turnaround_time = finish_times[i] - processes[i][1]
+        waiting_time = turnaround_time - processes[i][3]
+        turnaround_times.append(turnaround_time)
+        waiting_times.append(waiting_time)
+
+    return turnaround_times, waiting_times
+
+def priority_non_preemptive(processes):
+    processes.sort(key=lambda x: (x[2], x[1]))
+    finish_times = []
+    current_time = 0
+
+    for process in processes:
+        if current_time < process[1]:
+            current_time = process[1]
+        finish_time = current_time + process[3]
+        finish_times.append(finish_time)
+        current_time = finish_time
+
+    turnaround_times, waiting_times = calculate_times(processes, finish_times)
+    total_waiting_time = sum(waiting_times)
+    total_turnaround_time = sum(turnaround_times)
+
+    print("Priority Scheduling (Non-preemptive):")
+    print(f"{'Process':<10}{'Arrival':<10}{'Priority':<10}{'Burst':<10}{'Finish':<10}{'Turnaround':<10}{'Waiting':<10}")
+    for i, process in enumerate(processes):
+        print(f"P{i:<9}{process[1]:<10}{process[2]:<10}{process[3]:<10}{finish_times[i]:<10}{turnaround_times[i]:<10}{waiting_times[i]:<10}")
+
+    print(f"Total Waiting Time: {total_waiting_time}")
+    print(f"Average Waiting Time: {total_waiting_time / len(processes)}")
+    print(f"Total Turnaround Time: {total_turnaround_time}")
+    print(f"Average Turnaround Time: {total_turnaround_time / len(processes)}")
+
+    draw_gantt_chart([(finish_times[i] - process[3], process[3], i) for i, process in enumerate(processes)])
+
+
+processes = [
+    ['P0', 0, 1, 5],
+    ['P1', 2, 3, 3],
+    ['P2', 1, 2, 8],
+    ['P3', 3, 2, 6]
+]
+
+priority_non_preemptive(processes)
+
+
+
+
+priority preemptive:
+import matplotlib.pyplot as plt
+
+def draw_gantt_chart(gantt_chart):
+    plt.figure(figsize=(10, 5))
+    plt.barh(range(len(gantt_chart)), [item[1] for item in gantt_chart], left=[item[0] for item in gantt_chart], color='skyblue')
+    plt.yticks(range(len(gantt_chart)), [f'P{item[2]}' for item in gantt_chart])
+    plt.xlabel('Time')
+    plt.title('Gantt Chart')
+    plt.grid(axis='x')
+    plt.show()
+
+def calculate_times(processes, finish_times):
+    turnaround_times = []
+    waiting_times = []
+    
+    for i in range(len(processes)):
+        turnaround_time = finish_times[i] - processes[i][1]
+        waiting_time = turnaround_time - processes[i][3]
+        turnaround_times.append(turnaround_time)
+        waiting_times.append(waiting_time)
+
+    return turnaround_times, waiting_times
+
+def priority_preemptive(processes):
+    processes.sort(key=lambda x: (x[1], x[2]))
+    n = len(processes)
+    burst_remaining = [process[3] for process in processes]
+    current_time = 0
+    complete = 0
+    finish_times = [0] * n
+    is_completed = [False] * n
+
+    gantt_chart = []
+    
+    while complete != n:
+        idx = -1
+        min_priority = float('inf')
+        
+        for i in range(n):
+            if processes[i][1] <= current_time and not is_completed[i]:
+                if processes[i][2] < min_priority:
+                    min_priority = processes[i][2]
+                    idx = i
+
+        if idx == -1:
+            current_time += 1
+            continue
+
+        gantt_chart.append((current_time, 1, idx))
+        current_time += 1
+        burst_remaining[idx] -= 1
+
+        if burst_remaining[idx] == 0:
+            finish_times[idx] = current_time
+            is_completed[idx] = True
+            complete += 1
+
+    turnaround_times, waiting_times = calculate_times(processes, finish_times)
+    total_waiting_time = sum(waiting_times)
+    total_turnaround_time = sum(turnaround_times)
+
+    print("Priority Scheduling (Preemptive):")
+    print(f"{'Process':<10}{'Arrival':<10}{'Priority':<10}{'Burst':<10}{'Finish':<10}{'Turnaround':<10}{'Waiting':<10}")
+    for i, process in enumerate(processes):
+        print(f"P{i:<9}{process[1]:<10}{process[2]:<10}{process[3]:<10}{finish_times[i]:<10}{turnaround_times[i]:<10}{waiting_times[i]:<10}")
+
+    print(f"Total Waiting Time: {total_waiting_time}")
+    print(f"Average Waiting Time: {total_waiting_time / len(processes)}")
+    print(f"Total Turnaround Time: {total_turnaround_time}")
+    print(f"Average Turnaround Time: {total_turnaround_time / len(processes)}")
+
+    draw_gantt_chart(gantt_chart)
+
+processes = [
+    ['P0', 0, 1, 5],
+    ['P1', 2, 3, 3],
+    ['P2', 1, 2, 8],
+    ['P3', 3, 2, 6]
+]
+
+priority_preemptive(processes)
+
+
+
+
+
+producer.mutex:
+import threading
+import time
+import random
+
+BUFFER_SIZE = 5
+buffer = [None] * BUFFER_SIZE
+in_index = 0
+out_index = 0
+
+empty = threading.Semaphore(BUFFER_SIZE)
+full = threading.Semaphore(0)
+mutex = threading.Lock()
+
+MAX_ITEMS = 10
+produced_count = 0
+consumed_count = 0
+
+def producer():
+    global in_index, produced_count
+    while produced_count < MAX_ITEMS:
+        item = random.randint(1, 100)
+        
+        empty.acquire()
+        mutex.acquire()
+        
+        buffer[in_index] = item
+        print(f"Producer produced: {item}")
+        in_index = (in_index + 1) % BUFFER_SIZE
+        produced_count += 1
+        
+        mutex.release()
+        full.release()
+        
+        time.sleep(random.uniform(1, 2))
+
+def consumer():
+    global out_index, consumed_count
+    while consumed_count < MAX_ITEMS:
+        full.acquire()
+        mutex.acquire()
+        
+        item = buffer[out_index]
+        print(f"Consumer consumed: {item}")
+        buffer[out_index] = None
+        out_index = (out_index + 1) % BUFFER_SIZE
+        consumed_count += 1
+        
+        mutex.release()
+        empty.release()
+        
+        time.sleep(random.uniform(2, 3))
+
+if __name__ == "__main__":
+    producer_thread = threading.Thread(target=producer)
+    consumer_thread = threading.Thread(target=consumer)
+    
+    producer_thread.start()
+    consumer_thread.start()
+    
+    producer_thread.join()
+    consumer_thread.join()
+    
+    print("Production and consumption completed.")
+
+
+
+
+producer.semaphore:
+import threading
+import time
+import random
+
+BUFFER_SIZE = 5
+buffer = [None] * BUFFER_SIZE
+in_index = 0
+out_index = 0
+
+empty = threading.Semaphore(BUFFER_SIZE)
+full = threading.Semaphore(0)
+mutex = threading.Semaphore(1)
+
+MAX_ITEMS = 10
+produced_count = 0
+consumed_count = 0
+
+def producer():
+    global in_index, produced_count
+    while produced_count < MAX_ITEMS:
+        item = random.randint(1, 100)
+        
+        empty.acquire()
+        mutex.acquire()
+        
+        buffer[in_index] = item
+        print(f"Producer produced: {item}")
+        in_index = (in_index + 1) % BUFFER_SIZE
+        produced_count += 1
+        
+        mutex.release()
+        full.release()
+        
+        time.sleep(random.uniform(1, 2))
+
+def consumer():
+    global out_index, consumed_count
+    while consumed_count < MAX_ITEMS:
+        full.acquire()
+        mutex.acquire()
+        
+        item = buffer[out_index]
+        print(f"Consumer consumed: {item}")
+        buffer[out_index] = None
+        out_index = (out_index + 1) % BUFFER_SIZE
+        consumed_count += 1
+        
+        mutex.release()
+        empty.release()
+        
+        time.sleep(random.uniform(2, 3))
+
+if __name__ == "__main__":
+    producer_thread = threading.Thread(target=producer)
+    consumer_thread = threading.Thread(target=consumer)
+    
+    producer_thread.start()
+    consumer_thread.start()
+    
+    producer_thread.join()
+    consumer_thread.join()
+    
+    print("Production and consumption completed.")
+
+
+
+
+
+bankers:
+
+def is_safe(processes, avail, max_matrix, alloc):
+    n = len(processes)
+    m = len(avail)
+    work = avail.copy()
+    finish = [False] * n
+    safe_seq = []
+
+    need = [[max_matrix[i][j] - alloc[i][j] for j in range(m)] for i in range(n)]
+
+    while len(safe_seq) < n:
+        found = False
+        for i in range(n):
+            if not finish[i]:
+                for j in range(m):
+                    if need[i][j] > work[j]:
+                        break
+                else:
+                    for k in range(m):
+                        work[k] += alloc[i][k]
+                    safe_seq.append(processes[i])
+                    finish[i] = True
+                    found = True
+        if not found:
+            return False, []
+
+    return True, safe_seq
+
+processes = [0, 1, 2, 3, 4]
+avail = [1, 1, 2]
+#avail=[3,3,2]
+max_matrix = [
+    [7, 5, 3],
+    [3, 2, 2],
+    [9, 0, 2],
+    [2, 2, 2],
+    [4, 3, 3]
+]
+alloc = [
+    [0, 1, 0],
+    [2, 0, 0],
+    [3, 0, 2],
+    [2, 1, 1],
+    [0, 0, 2]
+]
+
+is_safe_state, safe_sequence = is_safe(processes, avail, max_matrix, alloc)
+
+if is_safe_state:
+    print("System is in a safe state.")
+    print("Safe sequence:", safe_sequence)
+else:
+    print("System is not in a safe state.")
+
+
+
+
+
+
+
+
+
+
+
+
